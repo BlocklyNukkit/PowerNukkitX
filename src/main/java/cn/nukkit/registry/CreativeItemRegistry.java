@@ -38,7 +38,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     public void init() {
         if (isLoad.getAndSet(true))
             return;
-        try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.json")) {
+        try (InputStream input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.json")) {
             Map data = new Gson().fromJson(new InputStreamReader(input), Map.class);
             List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
             for (int i = 0; i < items.size(); i++) {

@@ -14,6 +14,7 @@ import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
 import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
+import cn.nukkit.entity.ai.executor.VarCopyExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
@@ -52,21 +53,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
                 this.tickSpread,
-                Set.of(
-                        new Behavior(
-                                entity -> {
-                                    var storage = getMemoryStorage();
-                                    if (storage.notEmpty(CoreMemoryTypes.ATTACK_TARGET)) return false;
-                                    Entity attackTarget = null;
-                                    if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
-                                        attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
-                                    }
-                                    storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
-                                    return false;
-                                },
-                                entity -> true, 20
-                        )
-                ),
+                Set.of(new Behavior(new VarCopyExecutor(), none(), 20)),
                 Set.of(
                         new Behavior(new PlaySoundExecutor(Sound.MOB_WITHER_AMBIENT), new RandomSoundEvaluator(), 5, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 10, Effect.get(EffectType.WITHER).setDuration(200)),new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
