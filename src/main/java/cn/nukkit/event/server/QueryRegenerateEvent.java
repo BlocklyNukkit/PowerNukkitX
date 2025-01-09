@@ -31,7 +31,7 @@ public class QueryRegenerateEvent extends ServerEvent {
     private String serverName;
     private boolean listPlugins;
     private Plugin[] plugins;
-    private Player[] players;
+    private String[] players;
 
     private final String gameType;
     private String version;
@@ -54,7 +54,7 @@ public class QueryRegenerateEvent extends ServerEvent {
         this.serverName = server.getMotd();
         this.listPlugins = server.getSettings().baseSettings().queryPlugins();
         this.plugins = server.getPluginManager() == null ? Plugin.EMPTY_ARRAY : server.getPluginManager().getPlugins().values().toArray(Plugin.EMPTY_ARRAY);
-        this.players = server.getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY);
+        this.players = (String[]) server.getOnlinePlayers().values().stream().map(Player::getName).toArray();
         this.gameType = (server.getGamemode() & 0x01) == 0 ? "SMP" : "CMP";
         this.version = ProtocolInfo.MINECRAFT_VERSION_NETWORK;
         this.server_engine = server.getName() + " " + server.getNukkitVersion() + " (" + server.getGitCommit() + ")";
@@ -98,11 +98,11 @@ public class QueryRegenerateEvent extends ServerEvent {
         this.plugins = plugins;
     }
 
-    public Player[] getPlayerList() {
+    public String[] getPlayerList() {
         return players;
     }
 
-    public void setPlayerList(Player[] players) {
+    public void setPlayerList(String[] players) {
         this.players = players;
     }
 
@@ -188,8 +188,8 @@ public class QueryRegenerateEvent extends ServerEvent {
         buf.writeBytes("player_".getBytes());
         buf.writeBytes(new byte[]{0x00, 0x00});
 
-        for (Player player : this.players) {
-            buf.writeBytes(player.getName().getBytes(StandardCharsets.UTF_8));
+        for (String player : this.players) {
+            buf.writeBytes(player.getBytes(StandardCharsets.UTF_8));
             buf.writeByte((byte) 0x00);
         }
 
