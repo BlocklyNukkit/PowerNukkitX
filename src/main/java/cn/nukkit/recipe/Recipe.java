@@ -20,7 +20,7 @@ public interface Recipe {
 
     default boolean fastCheck(Item... items) {
         if (getIngredients().size() != items.length) return false;
-        for (var item : items) {
+        for (Item item : items) {
             boolean b = getIngredients().stream().anyMatch(i -> i.match(item));
             if (!b) return false;
         }

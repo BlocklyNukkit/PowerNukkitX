@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -191,6 +192,10 @@ public final class PlayerHandle {
 
     public BiMap<Inventory, Integer> getWindows() {
         return player.windows;
+    }
+
+    public Set<Integer> getPermanentWindows() {
+        return player.permanentWindows;
     }
 
     public BiMap<Integer, Inventory> getWindowIndex() {

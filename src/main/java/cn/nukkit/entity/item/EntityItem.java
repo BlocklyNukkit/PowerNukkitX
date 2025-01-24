@@ -302,6 +302,12 @@ public class EntityItem extends Entity {
         return item;
     }
 
+    private void correctItem() {
+        if (!this.item.hasCompoundTag()) {
+            this.item.setNamedTag(new CompoundTag());
+        }
+    }
+
     @Override
     public boolean canCollideWith(Entity entity) {
         return false;
@@ -333,6 +339,7 @@ public class EntityItem extends Entity {
 
     @Override
     public DataPacket createAddEntityPacket() {
+        correctItem();
         AddItemEntityPacket addEntity = new AddItemEntityPacket();
         addEntity.entityUniqueId = this.getId();
         addEntity.entityRuntimeId = this.getId();

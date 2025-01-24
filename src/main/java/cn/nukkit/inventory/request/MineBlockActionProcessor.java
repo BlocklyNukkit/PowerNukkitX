@@ -37,7 +37,7 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
 
         Item itemInHand = inventory.getItemInHand();
         if (validateStackNetworkId(itemInHand.getNetId(), action.getStackNetworkId())) {
-            log.warn("mismatch source stack network id!");
+            log.warn("mismatch source stack network id! (MineBlockAction) Actual: " + action.getStackNetworkId() + ", Expected: " + itemInHand.getNetId());
             return context.error();
         }
 

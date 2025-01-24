@@ -13,6 +13,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Objects;
 
 import static cn.nukkit.inventory.request.CraftCreativeActionProcessor.CRAFT_CREATIVE_KEY;
 
@@ -30,13 +31,13 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         int destinationStackNetworkId = action.getDestination().getStackNetworkId();
         int count = action.getCount();
 
-        var sourItem = source.getItem(sourceSlot);
+        Item sourItem = source.getItem(sourceSlot);
         if (sourItem.isNull()) {
-            log.warn("transfer an air item is not allowed");
+            log.warn("transfer an air item is not allowed. Slot: " + sourceSlot + ", netId: " + sourceStackNetworkId + ", srcInv: " + source.getClass().getSimpleName());
             return context.error();
         }
         if (validateStackNetworkId(sourItem.getNetId(), sourceStackNetworkId)) {
-            log.warn("mismatch source stack network id!");
+            log.warn("mismatch source stack network id! Actual: " + sourceStackNetworkId + " Expected: " + sourItem.getNetId());
             return context.error();
         }
         if (sourItem.getCount() < count) {
@@ -66,12 +67,12 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         }
 
         var destItem = destination.getItem(destinationSlot);
-        if (!destItem.isNull() && !destItem.equals(sourItem, true, true)) {
+        if (!destItem.isNull() && !destItem.equalsCraft(sourItem, true, true)) {
             log.warn("transfer an item to a slot that has a different item is not allowed");
             return context.error();
         }
         if (validateStackNetworkId(destItem.getNetId(), destinationStackNetworkId)) {
-            log.warn("mismatch destination stack network id!");
+            log.warn("mismatch destination stack network id! Actual: " + destinationStackNetworkId + " Expected: " + destItem.getNetId());
             return context.error();
         }
         if (destItem.getCount() + count > destItem.getMaxStackSize()) {
